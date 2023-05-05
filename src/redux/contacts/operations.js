@@ -11,8 +11,8 @@ export const fetchContacts = createAsyncThunk(
     try {
       const data = await getAllContacts();
       return data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.message);
+    } catch ({ response }) {
+      return thunkAPI.rejectWithValue(response.data);
     }
   }
 );
@@ -22,12 +22,16 @@ export const addContact = createAsyncThunk(
   async (data, thunkAPI) => {
     try {
       const result = await addNewContact(data);
+      if (data.onSuccess) {
+        data.onSuccess();
+      }
       return result;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.message);
+    } catch ({ response }) {
+      return thunkAPI.rejectWithValue(response.data);
     }
   },
   {
+
     condition: (data, { getState }) => {
       const { name } = data;
       const { contacts } = getState();
@@ -40,8 +44,6 @@ export const addContact = createAsyncThunk(
         alert(`${name} is already in contacts.`);
         return false;
       }
-
-      return true;
     },
   }
 );
@@ -52,8 +54,8 @@ export const deleteContact = createAsyncThunk(
     try {
       await removeContact(id);
       return id;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.message);
+    } catch ({ response }) {
+      return thunkAPI.rejectWithValue(response.data.message);
     }
   }
 );
