@@ -40,6 +40,7 @@ const AddBtn = styled.button`
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   transition: all 0.3s ease-in-out;
+  transition: background-color 0.3s ease-in-out;
 
   &:hover,
   &:focus {
@@ -47,6 +48,7 @@ const AddBtn = styled.button`
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     outline: none;
   }
+
 `;
 
 export { Form, Input, AddBtn };

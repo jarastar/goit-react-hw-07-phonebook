@@ -1,38 +1,45 @@
-import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
-import { addContact } from 'redux/contacts/slice';
-import { getContacts } from 'redux/contacts/selectors';
+import { addContact, fetchContacts } from 'redux/contacts/operations';
 
 import { Form, Input, AddBtn } from './ContactForm.styled';
 
 const ContactForm = () => {
-  const contacts = useSelector(getContacts);
-
   const dispatch = useDispatch();
 
-  const [state, setState] = useState({ name: '', number: '' });
+  const [state, setState] = useState({ name: '', phone: '' });
+  const [loading, setLoading] = useState(false);
 
-  const isDuplicate = name => {
-    const normalizedName = name.toLowerCase();
+    useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
-    const contact = contacts.find(({ name }) => {
-      return name.toLowerCase() === normalizedName;
-    });
-
-    return Boolean(contact);
-  };
-
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
 
-    if (isDuplicate(name)) {
-      alert(`${name} is already in contacts.`);
-      return false;
+    if (loading) {
+      return;
     }
 
-    dispatch(addContact({ name, number }));
-    setState({ name: '', number: '' });
+    setLoading(true);
+
+    try {
+      await dispatch(
+        addContact({
+          name,
+          phone,
+          onSuccess: () => {
+            setState({ name: '', phone: '' });
+          },
+        })
+      );
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+ 
     return true;
   };
 
@@ -43,7 +50,7 @@ const ContactForm = () => {
     });
   };
 
-  const { name, number } = state;
+  const { name, phone } = state;
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -61,8 +68,8 @@ const ContactForm = () => {
       <label>Number</label>
       <Input
         type="tel"
-        name="number"
-        value={number}
+        name="phone"
+        value={phone}
         pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
         title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
         required
@@ -70,9 +77,12 @@ const ContactForm = () => {
         placeholder="Enter phone number"
       />
 
-      <AddBtn type="submit">Add contact</AddBtn>
+      <AddBtn type="submit">{loading ? 'Loading...' : 'Add contact'}</AddBtn>
     </Form>
   );
+  
 };
+
+
 
 export default ContactForm;

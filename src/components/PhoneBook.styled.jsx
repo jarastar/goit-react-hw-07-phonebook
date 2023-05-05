@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 const PhoneBookStyles = styled.div`
-  height: 100vh;
+  height: auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
