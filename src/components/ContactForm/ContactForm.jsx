@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { addContact, fetchContacts } from 'redux/contacts/operations';
+import { addContact } from 'redux/contacts/operations';
 
 import { Form, Input, AddBtn } from './ContactForm.styled';
 
@@ -11,9 +11,6 @@ const ContactForm = () => {
   const [state, setState] = useState({ name: '', phone: '' });
   const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-    dispatch(fetchContacts());
-  }, [dispatch]);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -27,8 +24,8 @@ const ContactForm = () => {
     try {
       await dispatch(
         addContact({
-          name,
-          phone,
+          name: state.name,
+          phone: state.phone,
           onSuccess: () => {
             setState({ name: '', phone: '' });
           },
@@ -80,9 +77,6 @@ const ContactForm = () => {
       <AddBtn type="submit">{loading ? 'Loading...' : 'Add contact'}</AddBtn>
     </Form>
   );
-  
 };
-
-
 
 export default ContactForm;
